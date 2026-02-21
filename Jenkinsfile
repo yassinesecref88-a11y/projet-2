@@ -47,6 +47,22 @@ pipeline {
             }
         }
     }
+    stage('Push to Docker Hub') {
+        steps {
+            withCredentials([usernamePassword(
+                credentialsId: 'dockerhub-creds',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
+
+                sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                sh 'docker tag student-management:latest $DOCKER_USER/student-management:latest'
+
+                sh 'docker push $DOCKER_USER/student-management:latest'
+            }
+        }
+    }
 
     post {
         always {
