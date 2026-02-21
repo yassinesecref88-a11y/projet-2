@@ -30,6 +30,13 @@ pipeline {
                 echo '========== Build completed =========='
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                echo '========== Building Docker image =========='
+                sh 'docker build -t student-management:latest .'
+                echo '========== Docker image built =========='
+            }
+        }
 
         stage('Archive Artifacts') {
             steps {
