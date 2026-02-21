@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '========== Checking out code =========='
@@ -30,6 +31,7 @@ pipeline {
                 echo '========== Build completed =========='
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 echo '========== Building Docker image =========='
@@ -46,22 +48,22 @@ pipeline {
                 echo '========== Artifacts archived =========='
             }
         }
-    }
-    stage('Push to Docker Hubb') {
-        steps {
-            withCredentials([usernamePassword(
-                credentialsId: 'dockerhub-creds',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS'
-            )]) {
 
-                sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+        stage('Push to Docker Hub') {   // ✅ NOW IN RIGHT PLACE
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
 
-                sh 'docker tag student-management:latest $DOCKER_USER/student-management:latest'
-
-                sh 'docker push $DOCKER_USER/student-management:latest'
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker tag student-management:latest $DOCKER_USER/student-management:latest'
+                    sh 'docker push $DOCKER_USER/student-management:latest'
+                }
             }
         }
+
     }
 
     post {
